@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Transaction Detail - Jelita Kosmetik
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}?v=10"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<div class="sidebar">
+
+    <h2>
+        Jelita Kosmetik
+    </h2>
+
+
+    <!-- MENU KHUSUS ADMIN -->
+
+    {% if session.get("role") == "admin" %}
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('products') }}">
+            Products
+        </a>
+
+        <a href="{{ url_for('inventory') }}">
+            Inventory
+        </a>
+
+    {% endif %}
+
+
+    <!-- MENU ADMIN & CASHIER -->
+
+    <a href="{{ url_for('cashier') }}">
+        Cashier
+    </a>
+
+    <a
+        href="{{ url_for('transactions') }}"
+        class="active-menu"
+    >
+        Transactions
+    </a>
+
+
+    <!-- SALES REPORT KHUSUS ADMIN -->
+
+    {% if session.get("role") == "admin" %}
+
+        <a href="{{ url_for('reports') }}">
+            Sales Report
+        </a>
+
+    {% endif %}
+
+
+    <!-- LOGOUT -->
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</div>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<div class="main-content">
+
+
+    <div class="detail-top">
+
+        <div>
+
+            <h1>
+                Transaction Detail
+            </h1>
+
+            <p>
+                {{ transaction["transaction_code"] }}
+            </p>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('transactions') }}"
+            class="back-btn"
+        >
+            ← Back
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         TRANSACTION INFO
+    ========================== -->
+
+    <div class="transaction-info-card">
+
+
+        <div>
+
+            <span>
+                Transaction Code
+            </span>
+
+            <strong>
+                {{ transaction["transaction_code"] }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Date
+            </span>
+
+            <strong>
+                {{ transaction["transaction_date"] }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Cashier
+            </span>
+
+            <strong>
+                {{ transaction["cashier_name"] or "-" }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Payment Method
+            </span>
+
+            <strong>
+                {{ transaction["payment_method"] or "Cash" }}
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         ITEMS
+    ========================== -->
+
+    <div class="transaction-items-card">
+
+        <h2>
+            Purchased Items
+        </h2>
+
+
+        <table class="product-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Product
+                    </th>
+
+                    <th>
+                        Price
+                    </th>
+
+                    <th>
+                        Qty
+                    </th>
+
+                    <th>
+                        Subtotal
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for item in details %}
+
+
+                    <tr>
+
+                        <td>
+
+                            <strong>
+                                {{ item["product_name"] }}
+                            </strong>
+
+                            <br>
+
+                            <small>
+                                {{ item["product_code"] }}
+                            </small>
+
+                        </td>
+
+
+                        <td>
+                            Rp {{ "{:,.0f}".format(item["price"]) }}
+                        </td>
+
+
+                        <td>
+                            {{ item["quantity"] }}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                Rp {{ "{:,.0f}".format(item["subtotal"]) }}
+                            </strong>
+
+                        </td>
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+            </tbody>
+
+        </table>
+
+
+        <!-- =========================
+             TOTAL
+        ========================== -->
+
+        <div class="transaction-payment-summary">
+
+
+            <div>
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    Rp {{ "{:,.0f}".format(transaction["total"]) }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Payment
+                </span>
+
+                <strong>
+                    Rp {{ "{:,.0f}".format(transaction["payment"]) }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Change
+                </span>
+
+                <strong>
+                    Rp {{ "{:,.0f}".format(transaction["change_amount"]) }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
