@@ -24,8 +24,41 @@ Jelita Kosmetik is a personal web development project designed to support cashie
 ## Project Status
 Local development project. The application currently runs on localhost.
 
-## Screenshots
-Application screenshots will be added.
+
+## Application Screenshots
+
+Below are screenshots of the Jelita Kosmetik POS & Inventory Management System.
+
+### 1. Login Page
+![Login Page](screenshots/login.png)
+
+### 2. Admin Dashboard
+![Admin Dashboard](screenshots/dashboard.png)
+
+### 3. Product Management
+![Product Management](screenshots/products.png)
+
+### 4. Inventory Overview
+![Inventory Overview](screenshots/inventory-overview.png)
+
+### 5. Recent Stock Activity
+![Recent Stock Activity](screenshots/inventory-activity.png)
+
+### 6. Cashier & Checkout
+![Cashier Interface](screenshots/cashier.png)
+
+### 7. Transaction History
+![Transaction History](screenshots/transactions.png)
+
+### 8. Transaction Detail
+![Transaction Detail](screenshots/transactions-detail.png)
+
+### 9. Sales Report
+![Sales Report](screenshots/sales-report.png)
+
+### 10. Printable Receipt
+![Printable Receipt](screenshots/receipt.png)
+
 
 ## Getting Started
 Local installation instructions will be added after verifying dependencies and database initialization.
