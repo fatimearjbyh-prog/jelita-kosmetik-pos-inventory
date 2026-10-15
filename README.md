@@ -5,6 +5,19 @@ A web-based Point of Sale (POS) and Inventory Management System developed using 
 
 ## Overview
 Jelita Kosmetik is a personal web development project designed to support cashier transactions, product management, inventory monitoring, and sales reporting in a cosmetic retail store.
+## Live Demo
+
+Jelita Kosmetik is a web-based Point of Sale (POS) and Inventory Management System developed using Python Flask and SQLite.
+
+The application provides features for product management, inventory tracking, sales transactions, receipt generation, and sales reporting.
+
+**Live Application:** [Jelita Kosmetik POS & Inventory](https://fatimearr30.pythonanywhere.com)
+
+**Demo Access:**
+- Username: `demo_admin`
+- Password: Available upon request
+
+**Note:** This application is deployed for portfolio demonstration purposes. Please use sample data when exploring its features.
 
 ## Key Features
 - Role-based login for Admin and Cashier
