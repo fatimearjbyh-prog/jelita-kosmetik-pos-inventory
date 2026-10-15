@@ -61,8 +61,66 @@ Below are screenshots of the Jelita Kosmetik POS & Inventory Management System.
 
 
 ## Getting Started
-Local installation instructions will be added after verifying dependencies and database initialization.
 
+### Prerequisites
+- Python 3.11 or a compatible version
+- pip
+
+### Installation
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/fatimearjbyh-prog/jelita-kosmetik-pos-inventory.git
+cd jelita-kosmetik-pos-inventory
+```
+
+**2. Install dependencies**
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+**3. Initialize the database**
+
+```bash
+python init_db.py
+```
+
+**4. Create a user account**
+
+```bash
+python create_user.py
+```
+
+Follow the terminal instructions to create an Admin or Cashier account.
+
+**5. Configure the secret key**
+
+In Windows PowerShell, run:
+
+```powershell
+$env:SECRET_KEY = python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+**6. Run the application**
+
+```bash
+python app.py
+```
+
+**7. Open the application**
+
+Visit http://127.0.0.1:5000 in your browser.
+
+Log in using the account created in Step 4.
+
+### Notes
+
+- The application is designed to run locally.
+- SQLite is used for database storage.
+- Users create their own login credentials.
+- The local database and secret key are not included in the repository.
 ## Author
 Fatimah Arrajabiyah
 
