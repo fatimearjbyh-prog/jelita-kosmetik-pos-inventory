@@ -15,7 +15,7 @@ The application provides features for product management, inventory tracking, sa
 
 **Demo Access:**
 - Username: `demo_admin`
-- Password: Available upon request
+- Password: @Admin123
 
 **Note:** This application is deployed for portfolio demonstration purposes. Please use sample data when exploring its features.
 
