@@ -12,11 +12,21 @@ import os
 app = Flask(__name__)
 
 # Digunakan untuk session login
-app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "development-key"
-)
+app.secret_key = os.environ.get("SECRET_KEY")
 
+if not app.secret_key:
+    raise RuntimeError(
+        "SECRET_KEY belum diatur. "
+        "Atur environment variable SECRET_KEY sebelum menjalankan aplikasi."
+    )
+
+# Format mata uang Rupiah untuk tampilan HTML
+@app.template_filter("rupiah")
+def format_rupiah(value):
+    try:
+        return f"Rp {int(value):,}".replace(",", ".")
+    except (ValueError, TypeError, OverflowError):
+        return "Rp 0"
 # Nama toko
 STORE_NAME = "Jelita Kosmetik"
 
@@ -1751,4 +1761,4 @@ def logout():
 # =========================================================
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
