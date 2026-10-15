@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Cashier - Jelita Kosmetik
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}?v=8"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<div class="sidebar">
+
+    <h2>
+        Jelita Kosmetik
+    </h2>
+
+
+    <!-- =========================
+         MENU KHUSUS ADMIN
+    ========================== -->
+
+    {% if session.get("role") == "admin" %}
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('products') }}">
+            Products
+        </a>
+
+        <a href="{{ url_for('inventory') }}">
+            Inventory
+        </a>
+
+    {% endif %}
+
+
+    <!-- =========================
+         MENU ADMIN & CASHIER
+    ========================== -->
+
+    <a
+        href="{{ url_for('cashier') }}"
+        class="active-menu"
+    >
+        Cashier
+    </a>
+
+    <a href="{{ url_for('transactions') }}">
+        Transactions
+    </a>
+
+
+    <!-- =========================
+         SALES REPORT KHUSUS ADMIN
+    ========================== -->
+
+    {% if session.get("role") == "admin" %}
+
+        <a href="{{ url_for('reports') }}">
+            Sales Report
+        </a>
+
+    {% endif %}
+
+
+    <!-- =========================
+         LOGOUT
+    ========================== -->
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</div>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<div class="main-content">
+
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="cashier-header">
+
+        <h1>
+            Cashier
+        </h1>
+
+        <p>
+            Process customer transactions at Jelita Kosmetik.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         FLASH MESSAGE
+    ========================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="success-message">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- =========================
+         BARCODE SCANNER
+    ========================== -->
+
+    <div class="barcode-card">
+
+        <div>
+
+            <h3>
+                Scan Product
+            </h3>
+
+            <p>
+                Scan or enter product barcode.
+            </p>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('cashier_scan') }}"
+            class="barcode-form"
+        >
+
+            <input
+                type="text"
+                id="barcodeInput"
+                name="barcode"
+                placeholder="Scan barcode here..."
+                autofocus
+                autocomplete="off"
+                required
+            >
+
+            <button type="submit">
+                Add
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- =========================
+         CASHIER LAYOUT
+    ========================== -->
+
+    <div class="cashier-layout">
+
+
+        <!-- =========================
+             AVAILABLE PRODUCTS
+        ========================== -->
+
+        <div class="cashier-section">
+
+            <div class="section-title">
+
+                <h2>
+                    Available Products
+                </h2>
+
+            </div>
+
+
+            <div class="cashier-product-list">
+
+
+                {% if products %}
+
+                    {% for product in products %}
+
+
+                        <div class="cashier-product-item">
+
+
+                            <div>
+
+                                <strong>
+                                    {{ product["product_name"] }}
+                                </strong>
+
+                                <p>
+                                    {{ product["category"] or "-" }}
+                                </p>
+
+                                <small>
+                                    Stock: {{ product["stock"] }}
+                                </small>
+
+                            </div>
+
+
+                            <div class="cashier-product-action">
+
+                                <strong>
+                                    {{ product["price"] | rupiah }}
+                                </strong>
+
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('cashier_add', product_id=product['id']) }}"
+                                >
+
+                                    <button type="submit">
+                                        + Add
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+                    <div class="no-history">
+
+                        No products available.
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             SHOPPING CART
+        ========================== -->
+
+        <div class="cashier-section cart-section">
+
+
+            <div class="section-title">
+
+                <h2>
+                    Shopping Cart
+                </h2>
+
+            </div>
+
+
+            {% if cart_items %}
+
+
+                <!-- CART ITEMS -->
+
+                <div class="cart-list">
+
+
+                    {% for item in cart_items %}
+
+
+                        <div class="cart-item">
+
+
+                            <!-- PRODUCT -->
+
+                            <div class="cart-product">
+
+                                <strong>
+                                    {{ item["product_name"] }}
+                                </strong>
+
+                                <small>
+                                    {{ item["price"] | rupiah }}
+                                </small>
+
+                            </div>
+
+
+                            <!-- QUANTITY -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('cashier_update', product_id=item['id']) }}"
+                                class="quantity-form"
+                            >
+
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    value="{{ item['quantity'] }}"
+                                    min="1"
+                                    max="{{ item['stock'] }}"
+                                >
+
+                                <button type="submit">
+                                    Update
+                                </button>
+
+                            </form>
+
+
+                            <!-- SUBTOTAL -->
+
+                            <strong class="subtotal">
+
+                                {{ item["subtotal"] | rupiah }}
+
+                            </strong>
+
+
+                            <!-- REMOVE -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('cashier_remove', product_id=item['id']) }}"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="remove-cart"
+                                    title="Remove product"
+                                >
+                                    ×
+                                </button>
+
+                            </form>
+
+
+                        </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+                <!-- =========================
+                     TOTAL
+                ========================== -->
+
+                <div class="cashier-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong>
+                       {{ total | rupiah }}
+                    </strong>
+
+                </div>
+
+
+                <!-- =========================
+                     CHECKOUT
+                ========================== -->
+
+                <form
+                    method="POST"
+                    action="{{ url_for('cashier_checkout') }}"
+                    class="checkout-form"
+                >
+
+
+                    <!-- PAYMENT METHOD -->
+
+                    <label>
+                        Payment Method
+                    </label>
+
+                    <select
+                        name="payment_method"
+                        id="paymentMethod"
+                        onchange="changePaymentMethod()"
+                        required
+                    >
+
+                        <option value="Cash">
+                            Cash
+                        </option>
+
+                        <option value="QRIS">
+                            QRIS
+                        </option>
+
+                        <option value="Debit Card">
+                            Debit Card
+                        </option>
+
+                    </select>
+
+
+                    <!-- =========================
+                         CASH
+                    ========================== -->
+
+                    <div id="cashPayment">
+
+                        <label>
+                            Cash Received
+                        </label>
+
+                        <input
+                            type="number"
+                            id="paymentInput"
+                            name="payment"
+                            min="{{ total }}"
+                            placeholder="Enter cash amount"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- =========================
+                         QRIS / DEBIT
+                    ========================== -->
+
+                    <div
+                        id="nonCashInfo"
+                        class="non-cash-info"
+                        style="display: none;"
+                    >
+
+                        <p>
+                            Payment Amount
+                        </p>
+
+                        <strong>
+                            Rp {{ "{:,.0f}".format(total) }}
+                        </strong>
+
+                        <small>
+                            No change for non-cash payment.
+                        </small>
+
+                    </div>
+
+
+                    <!-- CHECKOUT BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="checkout-btn"
+                    >
+                        Checkout
+                    </button>
+
+
+                </form>
+
+
+            {% else %}
+
+
+                <!-- =========================
+                     EMPTY CART
+                ========================== -->
+
+                <div class="empty-cart">
+
+                    <div class="empty-cart-icon">
+                        ♡
+                    </div>
+
+                    <h3>
+                        Cart is Empty
+                    </h3>
+
+                    <p>
+                        Scan a barcode or add a product to start a transaction.
+                    </p>
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+
+// ==============================
+// PAYMENT METHOD
+// ==============================
+
+function changePaymentMethod() {
+
+    const method =
+        document.getElementById(
+            "paymentMethod"
+        ).value;
+
+
+    const cashPayment =
+        document.getElementById(
+            "cashPayment"
+        );
+
+
+    const paymentInput =
+        document.getElementById(
+            "paymentInput"
+        );
+
+
+    const nonCashInfo =
+        document.getElementById(
+            "nonCashInfo"
+        );
+
+
+    if (method === "Cash") {
+
+        cashPayment.style.display =
+            "block";
+
+        nonCashInfo.style.display =
+            "none";
+
+        paymentInput.required =
+            true;
+
+    }
+
+    else {
+
+        cashPayment.style.display =
+            "none";
+
+        nonCashInfo.style.display =
+            "block";
+
+        paymentInput.required =
+            false;
+
+        paymentInput.value =
+            "";
+
+    }
+
+}
+
+
+// ==============================
+// BARCODE AUTOFOCUS
+// ==============================
+
+window.addEventListener(
+    "load",
+    function() {
+
+        const barcodeInput =
+            document.getElementById(
+                "barcodeInput"
+            );
+
+        if (barcodeInput) {
+
+            barcodeInput.focus();
+
+        }
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>

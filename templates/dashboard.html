@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Jelita Kosmetik</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h2>Jelita Kosmetik</h2>
+
+        <a href="{{ url_for('dashboard') }}">
+            Dashboard
+        </a>
+
+        <a href="{{ url_for('products') }}">
+            Products
+        </a>
+
+        <a href="{{ url_for('inventory') }}">
+            Inventory
+        </a>
+
+        <a href="{{ url_for('cashier') }}">
+            Cashier
+        </a>
+
+        <a href="{{ url_for('transactions') }}">
+            Transactions
+        </a>
+
+        <a href="{{ url_for('reports') }}">
+            Sales Report
+        </a>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+
+    <div class="main-content">
+
+        <div class="header">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>
+                    Welcome, <strong>{{ username }}</strong>
+                </p>
+            </div>
+
+            <div>
+                Role: {{ role }}
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-cards">
+
+            <div class="card">
+                <h3>Total Products</h3>
+                <h2>{{ total_products }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Low Stock</h3>
+                <h2>{{ low_stock }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Total Transactions</h3>
+                <h2>{{ total_transactions }}</h2>
+            </div>
+
+            <div class="card">
+                <h3>Total Sales</h3>
+                <h2>
+                    {{ total_sales | rupiah }}
+                </h2>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

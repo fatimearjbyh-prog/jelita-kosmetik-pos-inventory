@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Receipt - Jelita Kosmetik
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}?v=20"
+    >
+
+</head>
+
+
+<body class="receipt-page">
+
+
+<div class="receipt-wrapper">
+
+
+    <!-- =========================
+         RECEIPT
+    ========================== -->
+
+    <div class="receipt">
+
+
+        <!-- STORE -->
+
+        <div class="receipt-store">
+
+            <h2>
+                Jelita Kosmetik
+            </h2>
+
+            <p>
+                POS & Inventory Management System
+            </p>
+
+        </div>
+
+
+        <div class="receipt-divider"></div>
+
+
+        <!-- TRANSACTION INFO -->
+
+        <div class="receipt-info">
+
+
+            <div>
+
+                <span>
+                    Transaction
+                </span>
+
+                <strong>
+                    {{ transaction["transaction_code"] }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Date
+                </span>
+
+                <strong>
+                    {{ transaction["transaction_date"] }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Cashier
+                </span>
+
+                <strong>
+                    {{ transaction["cashier_name"] or "-" }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Payment Method
+                </span>
+
+                <strong>
+                    {{ transaction["payment_method"] or "Cash" }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="receipt-divider"></div>
+
+
+        <!-- ITEMS -->
+
+        <div class="receipt-items">
+
+
+            {% for item in details %}
+
+
+                <div class="receipt-item">
+
+
+                    <div class="receipt-item-name">
+
+                        <strong>
+                            {{ item["product_name"] }}
+                        </strong>
+
+                        <small>
+
+                            {{ item["quantity"] }}
+
+                            ×
+
+                            {{ item["price"] | rupiah }}
+
+                        </small>
+
+                    </div>
+
+
+                    <strong>
+
+                        {{ item["subtotal"] | rupiah }}
+
+                    </strong>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        </div>
+
+
+        <div class="receipt-divider"></div>
+
+
+        <!-- PAYMENT -->
+
+        <div class="receipt-summary">
+
+
+            <div>
+
+                <span>
+                    Total
+                </span>
+
+                <strong>
+                    {{ transaction["total"] | rupiah }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Payment
+                </span>
+
+                <strong>
+                   {{ transaction["payment"] | rupiah }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Change
+                </span>
+
+                <strong>
+                    {{ transaction["change_amount"] | rupiah }}
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="receipt-divider"></div>
+
+
+        <!-- FOOTER -->
+
+        <div class="receipt-footer">
+
+            <p>
+                Thank you for shopping
+            </p>
+
+            <strong>
+                Jelita Kosmetik ♡
+            </strong>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         ACTION BUTTON
+    ========================== -->
+
+    <div class="receipt-actions">
+
+
+        <button
+            type="button"
+            class="print-btn"
+            onclick="window.print()"
+        >
+            Print Receipt
+        </button>
+
+
+        <a
+            href="{{ url_for('cashier') }}"
+            class="new-transaction-btn"
+        >
+            New Transaction
+        </a>
+
+
+        <a
+            href="{{ url_for('transactions') }}"
+            class="transaction-history-btn"
+        >
+            Transaction History
+        </a>
+
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

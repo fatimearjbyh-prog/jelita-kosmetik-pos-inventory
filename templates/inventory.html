@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Inventory - Jelita Kosmetik
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}?v=5"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<div class="sidebar">
+
+    <h2>
+        Jelita Kosmetik
+    </h2>
+
+
+    <a href="{{ url_for('dashboard') }}">
+        Dashboard
+    </a>
+
+
+    <a href="{{ url_for('products') }}">
+        Products
+    </a>
+
+
+    <a
+        href="{{ url_for('inventory') }}"
+        class="active-menu"
+    >
+        Inventory
+    </a>
+
+
+    <a href="{{ url_for('cashier') }}">
+        Cashier
+    </a>
+
+
+    <a href="{{ url_for('transactions') }}">
+        Transactions
+    </a>
+
+
+    <a href="{{ url_for('reports') }}">
+        Sales Report
+    </a>
+
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</div>
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<div class="main-content">
+
+
+    <div class="inventory-header">
+
+        <div>
+
+            <h1>
+                Inventory
+            </h1>
+
+            <p>
+                Manage and monitor product stock at Jelita Kosmetik.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FLASH MESSAGE
+    ========================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="success-message">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- =========================
+         INVENTORY SUMMARY
+    ========================== -->
+
+    <div class="inventory-cards">
+
+
+        <div class="inventory-card">
+
+            <span>Total Stock</span>
+
+            <h2>
+                {{ total_stock }}
+            </h2>
+
+        </div>
+
+
+        <div class="inventory-card">
+
+            <span>Low Stock</span>
+
+            <h2>
+                {{ low_stock }}
+            </h2>
+
+        </div>
+
+
+        <div class="inventory-card">
+
+            <span>Out of Stock</span>
+
+            <h2>
+                {{ out_of_stock }}
+            </h2>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH
+    ========================== -->
+
+    <form
+        method="GET"
+        action="{{ url_for('inventory') }}"
+        class="product-search"
+    >
+
+        <input
+            type="text"
+            name="search"
+            placeholder="Search product, barcode or category..."
+            value="{{ search }}"
+        >
+
+
+        <button type="submit">
+            Search
+        </button>
+
+
+        {% if search %}
+
+            <a href="{{ url_for('inventory') }}">
+                Reset
+            </a>
+
+        {% endif %}
+
+    </form>
+
+
+    <!-- =========================
+         INVENTORY TABLE
+    ========================== -->
+
+    <div class="product-table-container">
+
+        <table class="product-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>No</th>
+
+                    <th>Product</th>
+
+                    <th>Category</th>
+
+                    <th>Current Stock</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            {% if products %}
+
+
+                {% for product in products %}
+
+
+                    <tr>
+
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ product["product_name"] }}
+                            </strong>
+
+                            <br>
+
+                            <small>
+                                {{ product["product_code"] }}
+                            </small>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="category-badge">
+
+                                {{ product["category"] or "-" }}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ product["stock"] }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+
+                            {% if product["stock"] == 0 %}
+
+                                <span class="status-out">
+                                    Out of Stock
+                                </span>
+
+
+                            {% elif product["stock"] <= 5 %}
+
+                                <span class="status-low">
+                                    Low Stock
+                                </span>
+
+
+                            {% else %}
+
+                                <span class="status-good">
+                                    In Stock
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="stock-btn"
+
+                                data-id="{{ product['id'] }}"
+                                data-name="{{ product['product_name'] }}"
+                                data-stock="{{ product['stock'] }}"
+
+                                onclick="openStockModal(this)"
+                            >
+
+                                + Stock
+
+                            </button>
+
+                        </td>
+
+
+                    </tr>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="empty-product"
+                    >
+
+                        No inventory data found.
+
+                    </td>
+
+                </tr>
+
+
+            {% endif %}
+
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- =========================
+         STOCK HISTORY
+    ========================== -->
+
+    <div class="inventory-history">
+
+        <div class="history-title">
+
+            <h2>
+                Recent Stock Activity
+            </h2>
+
+            <p>
+                Latest inventory movements.
+            </p>
+
+        </div>
+
+
+        <div class="history-list">
+
+
+            {% if inventory_logs %}
+
+
+                {% for log in inventory_logs %}
+
+
+                    <div class="history-item">
+
+
+                        <div>
+
+                            <strong>
+                                {{ log["product_name"] }}
+                            </strong>
+
+                            <p>
+
+                                {{ log["note"] or "Stock update" }}
+
+                            </p>
+
+                        </div>
+
+
+                        <div class="history-right">
+
+
+                            {% if log["movement_type"] == "IN" %}
+
+                                <span class="history-in">
+
+                                    +{{ log["quantity"] }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="history-out">
+
+                                    -{{ log["quantity"] }}
+
+                                </span>
+
+                            {% endif %}
+
+
+                            <small>
+
+                                {{ log["created_at"] }}
+
+                            </small>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                {% endfor %}
+
+
+            {% else %}
+
+
+                <div class="no-history">
+
+                    No stock activity yet.
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     STOCK IN MODAL
+========================= -->
+
+<div
+    id="stockModal"
+    class="modal"
+>
+
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+
+            <div>
+
+                <h2>
+                    Add Stock
+                </h2>
+
+                <p>
+                    Add incoming product stock.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="close-modal"
+                onclick="closeStockModal()"
+            >
+                &times;
+            </button>
+
+
+        </div>
+
+
+        <div class="stock-product-info">
+
+
+            <span>
+                Product
+            </span>
+
+            <strong id="stock_product_name">
+                -
+            </strong>
+
+
+            <span>
+                Current Stock
+            </span>
+
+            <strong id="current_stock">
+                0
+            </strong>
+
+
+        </div>
+
+
+        <form
+            id="stockForm"
+            method="POST"
+        >
+
+
+            <label>
+                Stock In
+            </label>
+
+
+            <input
+                type="number"
+                name="quantity"
+                min="1"
+                placeholder="Example: 20"
+                required
+            >
+
+
+            <label>
+                Note
+            </label>
+
+
+            <textarea
+                name="note"
+                placeholder="Example: Restock from supplier"
+            ></textarea>
+
+
+            <button
+                type="submit"
+                class="save-product-btn"
+            >
+
+                Save Stock
+
+            </button>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script>
+
+
+function openStockModal(button) {
+
+
+    const productId =
+        button.dataset.id;
+
+
+    const productName =
+        button.dataset.name;
+
+
+    const currentStock =
+        button.dataset.stock;
+
+
+    document.getElementById(
+        "stock_product_name"
+    ).textContent =
+        productName;
+
+
+    document.getElementById(
+        "current_stock"
+    ).textContent =
+        currentStock;
+
+
+    document.getElementById(
+        "stockForm"
+    ).action =
+        "/inventory/stock-in/" + productId;
+
+
+    document.getElementById(
+        "stockModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeStockModal() {
+
+
+    document.getElementById(
+        "stockModal"
+    ).style.display =
+        "none";
+
+}
+
+
+window.addEventListener(
+    "click",
+    function(event) {
+
+
+        const modal =
+            document.getElementById(
+                "stockModal"
+            );
+
+
+        if (event.target === modal) {
+
+            closeStockModal();
+
+        }
+
+
+    }
+);
+
+
+</script>
+
+
+</body>
+
+</html>
